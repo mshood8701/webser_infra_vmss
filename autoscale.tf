@@ -1,4 +1,4 @@
-/*
+
 resource "azurerm_monitor_autoscale_setting" "autoscale" {
   name                = "autoscale"
   location            = azurerm_resource_group.rg.location
@@ -14,7 +14,7 @@ resource "azurerm_monitor_autoscale_setting" "autoscale" {
       maximum = 3
     }
 
-    /*
+
 
     rule {
       metric_trigger {
@@ -52,7 +52,9 @@ resource "azurerm_monitor_autoscale_setting" "autoscale" {
         cooldown  = "PT1M"
       }
     }
-    */
+  }
+}
+
 
 
 
