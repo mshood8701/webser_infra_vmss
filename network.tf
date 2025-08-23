@@ -13,18 +13,12 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = var.resource_group_name
 }
 
-variable "network_config" {
-  type        = tuple([string, string, number])
-  description = "Network Configurations"
-  default     = ["192.168.0.0/16", "192.168.2.0", 24]
-}
-
 
 resource "azurerm_subnet" "subnet" {
   name                 = "subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["192.168.2.0/24"]
+  address_prefixes     = ["${element(var.network_config, 1)}/${element(var.network_config, 2)}"]
 }
 
 resource "azurerm_network_security_group" "myNSG" {
