@@ -8,10 +8,17 @@ resource "azurerm_resource_group" "rg" {
 
 resource "azurerm_virtual_network" "vnet" {
   name                = "terraformvnet"
-  address_space       = ["192.168.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = [element(var.network_config, 0)]
+  location            = var.location
+  resource_group_name = var.resource_group_name
 }
+
+variable "network_config" {
+  type        = tuple([string, string, number])
+  description = "Network Configurations"
+  default     = ["192.168.0.0/16", "192.168.2.0", 24]
+}
+
 
 resource "azurerm_subnet" "subnet" {
   name                 = "subnet"
