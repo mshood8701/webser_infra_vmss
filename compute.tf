@@ -1,5 +1,5 @@
 resource "azurerm_orchestrated_virtual_machine_scale_set" "web_server" {
-  name                        = "app-scaleset"
+  name                        = "${local.prefix}-vmss"
   resource_group_name         = azurerm_resource_group.rg.name
   location                    = azurerm_resource_group.rg.location
   sku_name                    = "Standard_D2s_v3"
@@ -41,7 +41,7 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "web_server" {
       name                                   = "ipconfig"
       primary                                = true
       subnet_id                              = azurerm_subnet.subnet.id
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.backend_pool_address.id]
+      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.backend.id]
     }
   }
 
@@ -54,7 +54,11 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "web_server" {
     ignore_changes = [
       instances
     ]
+
+
   }
+
+  tags = local.tags
 
 
 
