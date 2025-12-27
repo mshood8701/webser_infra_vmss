@@ -136,3 +136,10 @@ variable "container_name" {
   description = "The container for the tfstate file"
   default     = "tfstate"
 }
+
+
+variable "ssh_public_key" {
+  description = "SSH public key content"
+  type        = string
+  sensitive   = true
+}
