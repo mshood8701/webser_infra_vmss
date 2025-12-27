@@ -1,39 +1,102 @@
-Auto-Scaling VM Scale Set with Load Balancer
+# Auto-Scaling VM Scale Set with Load Balancer
 
-This project defines an Azure infrastructure setup designed for scalable and secure backend services. It uses a Virtual Machine Scale Set (VMSS) behind a Load Balancer, with state management in an Azure Storage Account, and implements strict network security and auto-scaling policies.
+Deploys a highly available, auto-scaling web server infrastructure on Azure using Virtual Machine Scale Sets (VMSS), Load Balancer, and NAT Gateway.
 
-Architecture Overview
+## Architecture
+                INTERNET
+                    │
+                    ▼
+          ┌─────────────────┐
+          │   Public IP     │
+          │   (LB Frontend) │
+          └────────┬────────┘
+                   │
+          ┌────────▼────────┐
+          │  Load Balancer  │
+          │  - HTTP Probe   │
+          │  - Port 80      │
+          └────────┬────────┘
+                   │
+     ┌─────────────┼─────────────┐
+     │             │             │
+┌────▼────┐   ┌────▼────┐   ┌────▼────┐
+│   VM1   │   │   VM2   │   │   VMn   │
+│ (Apache)│   │ (Apache)│   │ (Apache)│
+└────┬────┘   └────┬────┘   └────┬────┘
+     │             │             │
+     └─────────────┼─────────────┘
+                   │
+             ┌─────▼─────┐
+             │    NSG    │
+             │ (Filtered)│
+             └─────┬─────┘
+                   │
+          ┌────────▼────────┐
+          │   NAT Gateway   │
+          │ (Outbound Only) │
+          └────────┬────────┘
+                   │
+                   ▼
+               INTERNET
 
-- VM Scale Set (VMSS)
+               
+## Features
 
-  - Hosts backend servers for the Load Balancer pool.
+- **Auto-Scaling VMSS**
+  - Scale out: CPU > 90% → add instance
+  - Scale in: CPU < 10% → remove instance
+  - Default: 2 instances
+  - Range: 1 to 3 instances
+  - Cooldown: 1 minute between scaling actions
 
-  - Automatically scales based on CPU utilization:
+- **Load Balancing**
+  - Standard SKU Load Balancer
+  - HTTP health probe on port 80
+  - Even traffic distribution across healthy instances
 
-  - Scale Out: CPU > 80% → add VM
+- **Secure Networking**
+  - No public IPs on VMs
+  - NAT Gateway for controlled outbound access
+  - Dynamic NSG rules with default deny policy
 
-  - Scale In: CPU < 10% → remove VM
+- **Environment-Based Sizing**
+  - Dev: Standard_B1ms
+  - Staging: Standard_B2s
+  - Prod: Standard_B2ms
 
-  - Default instance count: 2
+## Prerequisites
 
-  - Minimum instances: 1
+| Requirement | Details |
+|-------------|---------|
+| Azure Subscription | Active subscription with sufficient quota |
+| Terraform | Version >= 1.0 |
+| Azure CLI | Installed and logged in (`az login`) |
+| SSH Key Pair | Public key for VM access |
 
-  - Maximum instances: 3
+## Quick Start
 
-- Load Balancer & NAT
+bash
+# 1. Clone the repository
+git clone https://github.com/mshood8701/webser_infra_vmss.git
+cd webser_infra_vmss
 
-- Load Balancer distributes traffic across VMSS instances.
+# 2. Login to Azure
+az login
+az account set --subscription "YOUR_SUBSCRIPTION_NAME"
 
-- NAT Gateway provides controlled outbound internet access.
+# 3. Create terraform.tfvars (see Configuration below)
+cp terraform.tfvars.example terraform.tfvars
+# Edit with your values
 
-- Network Security
+# 4. Initialize Terraform
+terraform init
 
-- Strict NSG rules allow traffic only from the Load Balancer.
+# 5. Review the plan
+terraform plan
 
-- Dynamic NSG rules are used to simplify configuration and maintenance.
+# 6. Deploy
+terraform apply
 
-- Resource Management
-
-- Resource Group to organize all related resources.
-
-- Storage Account and Blob Container to manage Terraform backend state.
+# 7. Access your application
+terraform output application_url
+            
