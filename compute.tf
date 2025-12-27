@@ -2,7 +2,7 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "web_server" {
   name                        = "${local.prefix}-vmss"
   resource_group_name         = azurerm_resource_group.rg.name
   location                    = azurerm_resource_group.rg.location
-  sku_name                    = "Standard_D2s_v3"
+  sku_name                    = local.vm_size
   instances                   = 2
   platform_fault_domain_count = 1
   zones                       = null
@@ -15,7 +15,7 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "web_server" {
       admin_username                  = "azureuser"
       admin_ssh_key {
         username   = "azureuser"
-        public_key = file("/Users/shood/Dev/infra_code/auto_scaling_compute/ssh.pub")
+        public_key = file(var.ssh_public_key)
       }
     }
   }
