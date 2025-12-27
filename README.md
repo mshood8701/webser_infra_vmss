@@ -2,44 +2,6 @@
 
 Deploys a highly available, auto-scaling web server infrastructure on Azure using Virtual Machine Scale Sets (VMSS), Load Balancer, and NAT Gateway.
 
-## Architecture
-                INTERNET
-                    │
-                    ▼
-          ┌─────────────────┐
-          │   Public IP     │
-          │   (LB Frontend) │
-          └────────┬────────┘
-                   │
-          ┌────────▼────────┐
-          │  Load Balancer  │
-          │  - HTTP Probe   │
-          │  - Port 80      │
-          └────────┬────────┘
-                   │
-     ┌─────────────┼─────────────┐
-     │             │             │
-┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-│   VM1   │   │   VM2   │   │   VMn   │
-│ (Apache)│   │ (Apache)│   │ (Apache)│
-└────┬────┘   └────┬────┘   └────┬────┘
-     │             │             │
-     └─────────────┼─────────────┘
-                   │
-             ┌─────▼─────┐
-             │    NSG    │
-             │ (Filtered)│
-             └─────┬─────┘
-                   │
-          ┌────────▼────────┐
-          │   NAT Gateway   │
-          │ (Outbound Only) │
-          └────────┬────────┘
-                   │
-                   ▼
-               INTERNET
-
-               
 ## Features
 
 - **Auto-Scaling VMSS**
